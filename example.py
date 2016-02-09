@@ -13,8 +13,7 @@ if __name__ == '__main__':
 
     from opt import fmincon
 
-    function = 'test.func'
-    # gradfunction = 'test.grad'
+    function = 'example.func'
 
     x0 = [0.0, 0.0]
     ub = [10.0, 10.0]
