@@ -1,3 +1,6 @@
+from __future__ import print_function
+
+
 def func(x):
 
     f = (x[0] - 3)**2 + (x[1] - 2)**2
@@ -13,6 +16,7 @@ if __name__ == '__main__':
 
     from opt import fmincon
 
+
     function = 'example.func'
 
     x0 = [0.0, 0.0]
@@ -27,9 +31,10 @@ if __name__ == '__main__':
 
     providegradients = True
 
-    xopt, fopt, exitflag = fmincon(x0, ub, lb, function, options,
+    xopt, fopt, exitflag, output = fmincon(x0, ub, lb, function, options,
         providegradients=providegradients)
 
-    print xopt
-    print fopt
-    print exitflag
+    print('xopt:', xopt)
+    print('fopt:', fopt)
+    print('exitflag:', exitflag)
+    print('output:', output)

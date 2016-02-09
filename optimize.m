@@ -1,4 +1,4 @@
-function [xopt, fopt, exitflag] = optimize(x0, ub, lb, funcname, ...
+function [xopt, fopt, exitflag, output] = optimize(x0, ub, lb, funcname, ...
     A, b, Aeq, beq, opt_struct, gradients)
 
     % set options
@@ -19,7 +19,7 @@ function [xopt, fopt, exitflag] = optimize(x0, ub, lb, funcname, ...
     gcin = [];
 
     % run fmincon
-    [xopt, fopt, exitflag] = fmincon(@obj, x0, A, b, Aeq, beq, lb, ub, @con, options);
+    [xopt, fopt, exitflag, output] = fmincon(@obj, x0, A, b, Aeq, beq, lb, ub, @con, options);
 
 
     % ---------- Update objectives and constraints ------------------

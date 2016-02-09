@@ -5,7 +5,7 @@ import matlab.engine
 
 
 def fmincon(x0, ub, lb, function, options={}, A=[], b=[], Aeq=[], beq=[],
-    providegradients=False):
+        providegradients=False):
 
     # start matlab engine
     eng = matlab.engine.start_matlab()
@@ -21,8 +21,8 @@ def fmincon(x0, ub, lb, function, options={}, A=[], b=[], Aeq=[], beq=[],
 
     # run fmincon
     print('--- calling fmincon ---')
-    [xopt, fopt, exitflag] = eng.optimize(x0, ub, lb, function,
-        A, b, Aeq, beq, options, providegradients, nargout=3)
+    [xopt, fopt, exitflag, output] = eng.optimize(x0, ub, lb, function,
+        A, b, Aeq, beq, options, providegradients, nargout=4)
 
     xopt = xopt[0]  # convert nX1 matrix to array
     exitflag = int(exitflag)
@@ -30,4 +30,4 @@ def fmincon(x0, ub, lb, function, options={}, A=[], b=[], Aeq=[], beq=[],
     # close matlab engine
     eng.quit()
 
-    return xopt, fopt, exitflag
+    return xopt, fopt, exitflag, output
