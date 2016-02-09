@@ -1,6 +1,9 @@
 # pyfmincon
 A Python bridge to Matlab's fmincon (requires a Matlab license).
 
+- opt.py and optimize.m are the required files.
+- example.py is a working example.
+
 ## Requirements:
 - A license for Matlab and its optimization toolbox
 - Install the [Matlab Engine for Python](http://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html)
