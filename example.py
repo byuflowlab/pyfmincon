@@ -105,11 +105,7 @@ if __name__ == '__main__':
         'TolCon': 1e-6, 'TolFun': 1e-6, 'Diagnostics': 'on'}
 
     # --- load fmincon and run ----
-    pathToMatlab = '/Applications/MATLAB_R2015a.app/bin/matlab'
-    pathToPython = '/usr/bin/python'
-    fmin = fmincon(pathToMatlab, pathToPython)
-
-    xopt, fopt, exitflag, output = fmin.run(x0, ub, lb, function, options,
+    xopt, fopt, exitflag, output = fmincon(x0, ub, lb, function, options,
         providegradients=providegradients)
 
     # --- print results

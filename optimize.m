@@ -1,28 +1,16 @@
-function [] = optimize()
-
-    % unpack mat file (can't just dump all into namespace b.c. of nested functions)
-    S = load('optimize.mat');
-    x0 = S.x0;
-    ub = S.ub;
-    lb = S.lb;
-    options = S.options;
-    pyfunction = S.pyfunction;
-    A = S.A;
-    b = S.b;
-    Aeq = S.Aeq;
-    beq = S.beq;
-    providegradients = S.providegradients;
+function [xopt, fopt, exitflag, output] = optimize(x0, ub, lb, funcname, ...
+    A, b, Aeq, beq, opt_struct, gradients)
 
     % set options
-    opt = optimoptions('fmincon');
-    names = fieldnames(options);
+    options = optimoptions('fmincon');
+    names = fieldnames(opt_struct);
     for i = 1:length(names)
-        opt = optimoptions(opt, names{i}, options.(names{i}));
+        options = optimoptions(options, names{i}, opt_struct.(names{i}));
     end
 
     % check if gradients provided
-    if providegradients
-        opt = optimoptions(opt, 'GradObj', 'on', 'GradConstr', 'on');
+    if gradients
+        options = optimoptions(options, 'GradObj', 'on', 'GradConstr', 'on');
     end
 
     % shared variables
@@ -31,8 +19,7 @@ function [] = optimize()
     gcin = [];
 
     % run fmincon
-    [xopt, fopt, exitflag, optoutput] = fmincon(@obj, x0, A, b, Aeq, beq, lb, ub, @con, opt);
-
+    [xopt, fopt, exitflag, output] = fmincon(@obj, x0, A, b, Aeq, beq, lb, ub, @con, options);
 
     % ----- conversion functions from numpy to matlab ---------
     function [matrix] = matrixfromnumpy(array)
@@ -48,13 +35,13 @@ function [] = optimize()
 
     % ---------- Update objectives and constraints ------------------
     function [J, cin, gJ, gcin] = fupdate(x)
-        eval(['output = py.', pyfunction, '(x);'])  % output is a cell array with {J, cin}
+        eval(['output = py.', funcname, '(x);'])  % output is a cell array with {J, cin}
         xcheck = x;
 
         J = output{1};
         cin = vectorfromnumpy(output{2});
 
-        if providegradients
+        if gradients
             gJ = vectorfromnumpy(output{3});
             gcin = matrixfromnumpy(output{4});
         else
@@ -73,18 +60,14 @@ function [] = optimize()
     % ------------- Constraints ------------------------
     function [c, ceq, gc, geq] = con(x)
         if any(x ~= xcheck)
-            [~, cin, ~, gcin] = fupdate(x);
+            [J, cin, gJ, gcin] = fupdate(x);
         end
         c = cin;
         ceq = [];
         gc = gcin;
         geq = [];
     end
-    % ------------------------
-
-    % save results to file
-    save results.mat xopt fopt exitflag optoutput;
+    % ------------------------------------------------
 
 
 end
-

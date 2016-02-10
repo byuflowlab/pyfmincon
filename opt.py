@@ -1,42 +1,38 @@
-from scipy.io import savemat, loadmat
-import subprocess
+from __future__ import print_function
+
+print('--- starting matlab engine ---')
+import matlab.engine
 
 
-class fmincon(object):
+def fmincon(x0, ub, lb, function, options={}, A=[], b=[], Aeq=[], beq=[],
+        providegradients=False, setpython=None):
 
-    def __init__(self, pathToMatlab, pathToPython):
-        self.matlab = pathToMatlab
-        self.python = pathToPython
+    # check if setpython has a path (e.g., /usr/bin/python)
+    start_options = '-nodesktop -nojvm'
+    if setpython is not None:
+        start_options += ' -r pyversion ' + setpython
 
+    # start matlab engine
+    eng = matlab.engine.start_matlab(start_options)
 
-    def run(self, x0, ub, lb, function, options={}, A=[], b=[], Aeq=[], beq=[],
-            providegradients=False):
+    # convert arrays to matlab type
+    x0 = matlab.double(x0)  # must be list.  if numpy array call .tolist()
+    ub = matlab.double(ub)
+    lb = matlab.double(lb)
+    A = matlab.double(A)
+    b = matlab.double(b)
+    Aeq = matlab.double(Aeq)
+    beq = matlab.double(beq)
 
-        # save data into mat file
-        mdict = {}
-        mdict['x0'] = x0
-        mdict['ub'] = ub
-        mdict['lb'] = lb
-        mdict['options'] = options
-        mdict['pyfunction'] = function
-        mdict['A'] = A
-        mdict['b'] = b
-        mdict['Aeq'] = Aeq
-        mdict['beq'] = beq
-        mdict['providegradients'] = providegradients
+    # run fmincon
+    print('--- calling fmincon ---')
+    [xopt, fopt, exitflag, output] = eng.optimize(x0, ub, lb, function,
+        A, b, Aeq, beq, options, providegradients, nargout=4)
 
-        savemat('optimize.mat', mdict)
+    xopt = xopt[0]  # convert nX1 matrix to array
+    exitflag = int(exitflag)
 
-        # run fmincon
-        command = "pyversion " + self.python + "; optimize; quit"
-        subprocess.call([self.matlab, "-nosplash", "-nodesktop", "-nojvm", "-r", command])
+    # close matlab engine
+    eng.quit()
 
-
-        # load results from mat file
-        results = loadmat('results.mat')
-        xopt = results['xopt'][0]
-        fopt = results['fopt'][0][0]
-        exitflag = int(results['exitflag'][0][0])
-        output = results['optoutput'][0][0]
-
-        return xopt, fopt, exitflag, output
+    return xopt, fopt, exitflag, output
