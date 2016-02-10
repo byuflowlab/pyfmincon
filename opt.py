@@ -1,33 +1,42 @@
-from __future__ import print_function
-
-print('--- starting matlab engine ---')
-import matlab.engine
+from scipy.io import savemat, loadmat
+import subprocess
 
 
-def fmincon(x0, ub, lb, function, options={}, A=[], b=[], Aeq=[], beq=[],
-        providegradients=False):
+class fmincon(object):
 
-    # start matlab engine
-    eng = matlab.engine.start_matlab()
+    def __init__(self, pathToMatlab, pathToPython):
+        self.matlab = pathToMatlab
+        self.python = pathToPython
 
-    # convert arrays to matlab type
-    x0 = matlab.double(x0)  # must be list.  if numpy array call .tolist()
-    ub = matlab.double(ub)
-    lb = matlab.double(lb)
-    A = matlab.double(A)
-    b = matlab.double(b)
-    Aeq = matlab.double(Aeq)
-    beq = matlab.double(beq)
 
-    # run fmincon
-    print('--- calling fmincon ---')
-    [xopt, fopt, exitflag, output] = eng.optimize(x0, ub, lb, function,
-        A, b, Aeq, beq, options, providegradients, nargout=4)
+    def run(self, x0, ub, lb, function, options={}, A=[], b=[], Aeq=[], beq=[],
+            providegradients=False):
 
-    xopt = xopt[0]  # convert nX1 matrix to array
-    exitflag = int(exitflag)
+        # save data into mat file
+        mdict = {}
+        mdict['x0'] = x0
+        mdict['ub'] = ub
+        mdict['lb'] = lb
+        mdict['options'] = options
+        mdict['pyfunction'] = function
+        mdict['A'] = A
+        mdict['b'] = b
+        mdict['Aeq'] = Aeq
+        mdict['beq'] = beq
+        mdict['providegradients'] = providegradients
 
-    # close matlab engine
-    eng.quit()
+        savemat('optimize.mat', mdict)
 
-    return xopt, fopt, exitflag, output
+        # run fmincon
+        command = "pyversion " + self.python + "; optimize; quit"
+        subprocess.call([self.matlab, "-nosplash", "-nodesktop", "-nojvm", "-r", command])
+
+
+        # load results from mat file
+        results = loadmat('results.mat')
+        xopt = results['xopt'][0]
+        fopt = results['fopt'][0][0]
+        exitflag = int(results['exitflag'][0][0])
+        output = results['optoutput'][0][0]
+
+        return xopt, fopt, exitflag, output
