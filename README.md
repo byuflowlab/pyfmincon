@@ -1,5 +1,5 @@
 # pyfmincon
-A Python bridge to Matlab's fmincon (requires a Matlab license).
+A direct Python bridge to Matlab's fmincon.  No file i/o, sockets, or other hacks.
 
 - opt.py and optimize.m are the required files.
 - example.py is a working example.
