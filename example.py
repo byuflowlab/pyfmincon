@@ -95,9 +95,10 @@ if __name__ == '__main__':
     providegradients = True
 
     # -------- starting point and bounds --------------
-    x0 = [10.0, 10.0]
-    ub = [65.0, 70.0]
-    lb = [0.0, 0.0]
+    x0 = np.array([10.0, 10.0])
+    ub = np.array([65.0, 70.0])
+    lb = np.array([0.0, 0.0])
+
 
     # ---- set options ----
     options = {'Algorithm': 'active-set', 'AlwaysHonorConstraints': 'bounds',

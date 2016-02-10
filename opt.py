@@ -1,4 +1,5 @@
 from __future__ import print_function
+import numpy as np
 
 print('--- starting matlab engine ---')
 import matlab.engine
@@ -15,14 +16,15 @@ def fmincon(x0, ub, lb, function, options={}, A=[], b=[], Aeq=[], beq=[],
     # start matlab engine
     eng = matlab.engine.start_matlab(start_options)
 
-    # convert arrays to matlab type
-    x0 = matlab.double(x0)  # must be list.  if numpy array call .tolist()
-    ub = matlab.double(ub)
-    lb = matlab.double(lb)
-    A = matlab.double(A)
-    b = matlab.double(b)
-    Aeq = matlab.double(Aeq)
-    beq = matlab.double(beq)
+    # convert to numpy array then list then to matlab type
+    # these first conversions are necessary to allow both numpy and list style inputs
+    x0 = matlab.double(np.array(x0).tolist())
+    ub = matlab.double(np.array(ub).tolist())
+    lb = matlab.double(np.array(lb).tolist())
+    A = matlab.double(np.array(A).tolist())
+    b = matlab.double(np.array(b).tolist())
+    Aeq = matlab.double(np.array(Aeq).tolist())
+    beq = matlab.double(np.array(beq).tolist())
 
     # run fmincon
     print('--- calling fmincon ---')
