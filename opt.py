@@ -1,6 +1,9 @@
 from __future__ import print_function
 import numpy as np
 
+# Written by Andrew Ning.  Feb 2016.
+# FLOW Lab, Brigham Young University.
+
 print('--- starting matlab engine ---')
 import matlab.engine
 

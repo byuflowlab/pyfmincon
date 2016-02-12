@@ -1,6 +1,9 @@
 function [xopt, fopt, exitflag, output] = optimize(x0, ub, lb, funcname, ...
     A, b, Aeq, beq, opt_struct, gradients)
 
+% Written by Andrew Ning.  Feb 2016.
+% FLOW Lab, Brigham Young University.
+
     % set options
     options = optimoptions('fmincon');
     names = fieldnames(opt_struct);
