@@ -8,14 +8,15 @@ print('--- starting matlab engine ---')
 
 try:
     import matlab.engine
-except Exception, e:
-    """
+except ImportError:
+    import warnings
+    warnings.warn("""
     Matlab engine not installed.
     Instructions here: http://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
 
     If still having problems, try setting DYLD_FALLBACK_LIBRARY_PATH to contain your python lib location.
     See: http://www.mathworks.com/matlabcentral/answers/233539-error-importing-matlab-engine-into-python
-    """
+    """)
 
 
 
