@@ -106,7 +106,7 @@ if __name__ == '__main__':
         'TolCon': 1e-6, 'TolFun': 1e-6, 'Diagnostics': 'on'}
 
     # --- load fmincon and run ----
-    xopt, fopt, exitflag, output = fmincon(x0, ub, lb, function, options,
+    xopt, fopt, exitflag, output = fmincon(function, x0, lb, ub, options,
         providegradients=providegradients)
 
     # --- print results

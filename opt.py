@@ -5,10 +5,21 @@ import numpy as np
 # FLOW Lab, Brigham Young University.
 
 print('--- starting matlab engine ---')
-import matlab.engine
+
+try:
+    import matlab.engine
+except Exception, e:
+    """
+    Matlab engine not installed.
+    Instructions here: http://www.mathworks.com/help/matlab/matlab_external/install-the-matlab-engine-for-python.html
+
+    If still having problems, try setting DYLD_FALLBACK_LIBRARY_PATH to contain your python lib location.
+    See: http://www.mathworks.com/matlabcentral/answers/233539-error-importing-matlab-engine-into-python
+    """
 
 
-def fmincon(x0, ub, lb, function, options={}, A=[], b=[], Aeq=[], beq=[],
+
+def fmincon(function, x0, lb, ub, options={}, A=[], b=[], Aeq=[], beq=[],
         providegradients=False, setpython=None):
 
     # check if setpython has a path (e.g., /usr/bin/python)
@@ -31,8 +42,8 @@ def fmincon(x0, ub, lb, function, options={}, A=[], b=[], Aeq=[], beq=[],
 
     # run fmincon
     print('--- calling fmincon ---')
-    [xopt, fopt, exitflag, output] = eng.optimize(x0, ub, lb, function,
-        A, b, Aeq, beq, options, providegradients, nargout=4)
+    [xopt, fopt, exitflag, output] = eng.optimize(function, x0, A, b,
+        Aeq, beq, lb, ub, options, providegradients, nargout=4)
 
     xopt = xopt[0]  # convert nX1 matrix to array
     exitflag = int(exitflag)
